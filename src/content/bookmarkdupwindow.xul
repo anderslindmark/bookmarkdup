@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/css" href="chrome://global/skin/" ?>
+
+<window
+  onload="onLoad();"
+  id="bookmarkdup-window"
+  title="Bookmark dup"
+  orient="horizontal"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<script><![CDATA[
+
+dupList = {};
+bookmarksService = null;
+
+function onLoad() {
+  status = document.getElementById("status");
+  status.value = "Hejsan";
+
+  dupList = window.arguments[0].dupes;
+  bookmarksService = window.arguments[0].bookmarksService;
+  status.value = "dupList loaded";
+  setlbDupUrisVals(dupList);
+  status.value = "Done";
+
+}
+
+
+
+function setlbDupUrisVals(dupList) {
+  lbdup = document.getElementById("lbDupUris");
+  for (var uri in dupList) {
+    if (typeof(uri) == "undefined") { continue; }
+    title = dupList[uri][0].title;
+    lbdup.appendItem(title, uri);
+  }
+}
+
+function urisel() {
+  //var bookmarksService = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Ci.nsINavBookmarksService);
+  lbdup = document.getElementById("lbDupUris");
+  item = lbdup.selectedItem;
+  if (item == null) { return; }
+  lbdupdetails = document.getElementById("lbDupDetails");
+  for (var i = lbdupdetails.getRowCount()-1; i >= 0; i--) {
+    lbdupdetails.removeItemAt(i);
+  }
+  uri = item.value;
+  //alert("This item has: " + dupList[uri].length + " url's.");
+
+  bookmarks = dupList[uri];
+
+  for (var i = 0; i < bookmarks.length; i++)
+  {
+    var bookmark = bookmarks[i];
+    var uri = bookmark.uri;
+    var title = bookmark.title;
+    var itemID = bookmark.itemId;
+    // Get path:
+    var path = "" + bookmark.type;
+    var curNode = bookmark.parent; // parent = search query? 
+    while (curNode != null) {
+      /*
+      props = "";
+      for (var prop in curNode) {
+        props += prop + "\n";
+      }
+      alert(props);
+      */
+      alert(curNode.type);
+      //path = curNode.type + "/" + path;
+      curNode = curNode.parent;
+    }
+    //alert("path: " + path );
+    
+    //alert(props);
+    //var folder = bookmarksService.getFolderIDForItem(bookmark);
+    //var ffolder = bookmarksService.getFolderIDForItem(itemID);
+    //alert(ffolder);
+    var fid = bookmarksService.getFolderIdForItem(itemID);
+    var folderTitle = bookmarksService.getItemTitle(fid);
+    var par = bookmark.parent;
+
+    /*
+    title
+    uri
+    itemId
+    type
+    parent
+    QueryInterface
+    parentResult
+    accessCount
+    time
+    icon
+    indentLevel
+    bookmarkIndex
+    dateAdded
+    lastModified
+    tags
+    */
+    typof = typeof(bookmark);
+    props = "";
+    for (var prop in bookmark) {
+      props += prop + "\n";
+    }
+    // var parentTitle = bookmarksService.getItemTitle(pid);
+    //alert("Folder id: " + fid + "\nFolder title: " + folderTitle + "\ntypeof(parent): " + typeof(parent) + "\nParent props: " + props);
+    alert("type: " + bookmark.type + "\nQueryInterface: " + bookmark.QueryInterface);
+    //alert("typeof: " + typof + "\nprops: " + props);
+    lbdupdetails.appendItem( bookmark.uri, bookmark );
+  }
+}
+
+]]></script>
+
+<hbox>
+  <listbox id="lbDupUris" seltype="single" onselect="urisel();"></listbox>
+  <listbox id="lbDupDetails" seltype="multiple"></listbox>
+</hbox>
+
+<button 
+    id="btnCloseWin"
+    label="Close"
+    accesskey="c"
+    oncommand="close();"/>
+
+<label id="status" value="Loading..." />
+
+</window>
