@@ -12,83 +12,223 @@
 
 dupList = {};
 bookmarksService = null;
+historyServer = null;
+status = null;
 
 function onLoad() {
   status = document.getElementById("status");
-  status.value = "Hejsan";
-
-  dupList = window.arguments[0].dupes;
-  bookmarksService = window.arguments[0].bookmarksService;
-  status.value = "dupList loaded";
-  setlbDupUrisVals(dupList);
+  status.value = "Getting services";
+  
+  bookmarksService = window.arguments[0].bmService;
+  historyService = window.arguments[0].hService;
+  
+  status.value = "Loading bookmarks";
+  findBookmarks();
+  status.value = "Bookmarks loaded";
+  setlbDupUrisVals();
   status.value = "Done";
-
 }
 
+/**
+ * Finds all bookmarks and creates the dupe list
+ */
+function findBookmarks() {
+  function queryFolderRec(resultList, baseFolder, path) {
+    // Setup new query
+    var query = historyService.getNewQuery();
+    query.setFolders([baseFolder], 1);
+    var options = historyService.getNewQueryOptions();
+    options.queryType = options.QUERY_TYPE_BOOKMARKS;
 
+    var result = historyService.executeQuery(query, options);
+    var folderNode = result.root;
 
-function setlbDupUrisVals(dupList) {
-  lbdup = document.getElementById("lbDupUris");
-  for (var uri in dupList) {
-    if (typeof(uri) == "undefined") { continue; }
-    title = dupList[uri][0].node.title;
-    lbdup.appendItem(title, uri);
+    // Fix path attribute
+    if (path == "") {
+      path = folderNode.title + "/";
+    }
+    else {
+      path = path + folderNode.title + "/";
+    }
+
+    folderNode.containerOpen = true; // Open current folder
+
+    for (var i = 0; i < folderNode.childCount; i++) {
+      var childNode = folderNode.getChild(i);
+      if (childNode.type == childNode.RESULT_TYPE_URI)
+      {
+        // Bookmark
+        var obj = {node: childNode, path: path};
+      resultList.push(obj);
+      }
+      else if (childNode.type == childNode.RESULT_TYPE_FOLDER)
+      {
+        // Folder
+        queryFolderRec(resultList, childNode.itemId, path);
+      }
+    }
+    folderNode.containerOpen = false; // Close current folder
+  }
+
+  // Query all three folder groups
+  var resultList = [];
+  queryFolderRec(resultList, bookmarksService.toolbarFolder, "");
+  queryFolderRec(resultList, bookmarksService.bookmarksMenuFolder, "");
+  queryFolderRec(resultList, bookmarksService.unfiledBookmarksFolder, "");
+
+  // Sort the URI's for easy duplicate check
+  resultList.sort( function(a,b) {
+    if (a.node.uri < b.node.uri) return -1;
+    if (a.node.uri > b.node.uri) return 1;
+    return 0;
+  });
+
+  dupList = {}; // This contains a list of all duplicate bookmarks, on the form {node: bookmark, path: folderpath}
+  for (var i = 0; i < resultList.length - 1; i++) {
+    var thisBookmark = resultList[i];
+    var nextBookmark = resultList[i+1];
+
+    if (thisBookmark.node.uri == nextBookmark.node.uri) {
+      // Dupe found
+      if (!(thisBookmark.node.uri in dupList)) {
+        dupList[thisBookmark.node.uri] = []; // Initialize this dupList[uri]
+      }
+      
+      // Add both bookmarks, but check if they are already in the list first
+      if (dupList[thisBookmark.node.uri].indexOf(thisBookmark) == -1) {
+        dupList[thisBookmark.node.uri].push(thisBookmark);
+      }
+      if (dupList[thisBookmark.node.uri].indexOf(nextBookmark) == -1) {
+        dupList[thisBookmark.node.uri].push(nextBookmark);
+      }
+      // dupList[uri] = [bookmark_1, bookmark_2, ..., bookmark_n]
+    }
   }
 }
 
+/**
+* Updates the left listbox with duplicate titles
+*/
+function setlbDupUrisVals() {
+  lbdup = document.getElementById("lbDupUris");
+  // Clear list
+  for (var i = lbdup.getRowCount()-1; i >= 0; i--) {
+    lbdup.removeItemAt(i);
+  }
+
+  // Populate list
+  for (var uri in dupList) {
+    if (typeof(uri) == "undefined") { continue; }
+    title = dupList[uri][0].node.title;
+    var item = lbdup.appendItem(title, uri);
+  }
+}
+
+function clearDupDetails() {
+    lbdupdetails = document.getElementById("lbDupDetails");
+  // Clear existing values:
+  for (var i = lbdupdetails.getRowCount()-1; i >= 0; i--) {
+    lbdupdetails.removeItemAt(i);
+  }
+}
+
+dupinfo = [];
+/**
+* Updates the right listbox with information for the selected duplicate
+*/
 function urisel() {
   lbdup = document.getElementById("lbDupUris");
   item = lbdup.selectedItem;
   if (item == null) { return; }
 
   lbdupdetails = document.getElementById("lbDupDetails");
-  // Clear existing values:
-  for (var i = lbdupdetails.getRowCount()-1; i >= 0; i--) {
-    lbdupdetails.removeItemAt(i);
-  }
+  clearDupDetails();
 
   uri = item.value;
   //alert("This item has: " + dupList[uri].length + " url's.");
 
-  bookmarks = dupList[uri];
+  var bookmarks = dupList[uri];
 
-  var longest = 0;
+  dupinfo = []; // clear dupinfo
   for (var i = 0; i < bookmarks.length; i++)
   {
     var bookmark = bookmarks[i].node;
     var path = bookmarks[i].path;
-    var uri = bookmark.uri;
-    var title = bookmark.title;
-    var itemID = bookmark.itemId;
+    //var title = bookmark.title;
+    //var itemID = bookmark.itemId;
 
     //var itemText = path + bookmark.title;
     var itemText = path;
 
-    lbdupdetails.appendItem( itemText, bookmark );
+    // {itemId: bookmark.itemId, uri: uri}
+    var item = lbdupdetails.appendItem( itemText, i);
+    dupinfo.push( {itemId: bookmark.itemId, uri: uri} )
+    //window.alert("i: " + item.value + ", dupinfo[i]: " + dupinfo[i].itemId);
+  }
+}
 
-    if (itemText.length > longest) {
-      longest = itemText.length;
+/**
+ * Deletes the selected bookmarks
+ */
+function delbmarks() {
+  lbdupdetails = document.getElementById("lbDupDetails");
+  var items = lbdupdetails.selectedItems;
+  if (items.length == 0) { return; }
+
+  var remove_ids = [];
+  // Iterate over selected items
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var itemId = dupinfo[item.value].itemId;
+    var uri = dupinfo[item.value].uri;
+    remove_ids.push(itemId); // Add to list of items to be removed
+    
+    // Iterate over current dupeList, remove items from that list
+    var bookmarks = dupList[uri];
+    for (var j = bookmarks.length-1; j >= 0; j--) {
+      if (bookmarks[j].node.itemId == itemId) {
+        bookmarks.splice(j, 1);
+      }
+    }
+    
+    // If there is no longer sufficient bookmarks to be a dupe, delete this and deselect this item.
+    if (dupList[uri].length <= 1) {
+      delete dupList[uri];
+      lbdupuris = document.getElementById("lbDupUris");
+      clearDupDetails();
+      lbdupuris.selectedItem = null;
+    }
+    else {
+      urisel();
     }
   }
 
-  //window.alert(longest);
-  //lbdupdetails.width = longest + "pt";
+  // Delete the actual bookmarks
+  for (var i = 0; i < remove_ids.length; i++) {
+    bookmarksService.removeItem(remove_ids[i]);
+    //window.alert("bookmarksService.removeItem(" + remove_ids[i] + ")");
+  }
 
+  // Update dupe-list
+  setlbDupUrisVals();
 }
+
 
 ]]></script>
 
-<hbox>
-  <listbox id="lbDupUris" seltype="single" onselect="urisel();"></listbox>
-  <listbox id="lbDupDetails" seltype="multiple" flex="1"></listbox>
-</hbox>
+<vbox>
+  <hbox>
+    <listbox id="lbDupUris" seltype="single" onselect="urisel();"></listbox>
+    <listbox id="lbDupDetails" seltype="multiple" flex="1"></listbox>
+    <button id="btnDelBmarks" label="Delete" accesskey="d" oncommand="delbmarks();"/>
+  </hbox>
 
-<button 
-    id="btnCloseWin"
-    label="Close"
-    accesskey="c"
-    oncommand="close();"/>
+  <button 
+      id="btnCloseWin"
+      label="Close"
+      accesskey="c"
+      oncommand="close();"/>
 
-<label id="status" value="Loading..." />
-
+  <label id="status" value="Loading..." />
+</vbox>
 </window>
