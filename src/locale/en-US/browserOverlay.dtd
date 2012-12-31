@@ -1,3 +1,4 @@
-<!ENTITY xulschoolhello.hello.label            "Hello World!">
-<!ENTITY xulschoolhello.helloMenu.accesskey    "l">
-<!ENTITY xulschoolhello.helloItem.accesskey    "H">
+<!ENTITY bookmarkdup.bmdup.label            "Bookmark Duplicate Cleaner">
+<!ENTITY bookmarkdup.bmdupFind.label		"Find duplicates">
+<!ENTITY bookmarkdup.bmdupMenu.accesskey    "B">
+<!ENTITY bookmarkdup.bmdupItem.accesskey    "F">

@@ -1,7 +1,7 @@
-content   xulschoolhello                content/
-skin      xulschoolhello  classic/1.0   skin/
-locale    xulschoolhello  en-US         locale/en-US/
+content   bookmarkdup                content/
+skin      bookmarkdup  classic/1.0   skin/
+locale    bookmarkdup  en-US         locale/en-US/
 
-overlay chrome://browser/content/browser.xul  chrome://xulschoolhello/content/browserOverlay.xul
+overlay chrome://browser/content/browser.xul  chrome://bookmarkdup/content/browserOverlay.xul
 
 

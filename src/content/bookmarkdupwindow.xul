@@ -176,11 +176,12 @@ function delbmarks() {
   if (items.length == 0) { return; }
 
   var remove_ids = [];
+  var uri = null;
   // Iterate over selected items
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
     var itemId = dupinfo[item.value].itemId;
-    var uri = dupinfo[item.value].uri;
+    uri = dupinfo[item.value].uri;
     remove_ids.push(itemId); // Add to list of items to be removed
     
     // Iterate over current dupeList, remove items from that list
@@ -189,18 +190,18 @@ function delbmarks() {
       if (bookmarks[j].node.itemId == itemId) {
         bookmarks.splice(j, 1);
       }
-    }
-    
-    // If there is no longer sufficient bookmarks to be a dupe, delete this and deselect this item.
-    if (dupList[uri].length <= 1) {
-      delete dupList[uri];
-      lbdupuris = document.getElementById("lbDupUris");
-      clearDupDetails();
-      lbdupuris.selectedItem = null;
-    }
-    else {
-      urisel();
-    }
+    }    
+  }
+
+  // If there is no longer sufficient bookmarks to be a dupe, delete this and deselect this item.
+  if (dupList[uri].length <= 1) {
+    delete dupList[uri];
+    lbdupuris = document.getElementById("lbDupUris");
+    clearDupDetails();
+    lbdupuris.selectedItem = null;
+  }
+  else {
+    urisel();
   }
 
   // Delete the actual bookmarks

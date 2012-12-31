@@ -4,12 +4,12 @@
   xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>helloworld@xulschool.com</em:id>
-    <em:name>XUL School Hello World</em:name>
-    <em:description>Welcome to XUL School!</em:description>
+    <em:id>bookmarkdup@localghost.net</em:id>
+    <em:name>Bookmark Duplicate Manager</em:name>
+    <em:description>Scans for bookmark duplicates and allows you to manage them</em:description>
     <em:version>0.1</em:version>
-    <em:creator>Appcoast</em:creator>
-    <em:homepageURL>https://developer.mozilla.org/en/XUL_School</em:homepageURL>
+    <em:creator>Anders Lindmark</em:creator>
+    <em:homepageURL>http://example.com</em:homepageURL>
     <em:type>2</em:type>
 
     <!-- Mozilla Firefox -->
@@ -17,7 +17,7 @@
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>4.0</em:minVersion>
-        <em:maxVersion>10.*</em:maxVersion>
+        <em:maxVersion>20.*</em:maxVersion>
       </Description>
     </em:targetApplication>
   </Description>
