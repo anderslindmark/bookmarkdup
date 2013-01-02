@@ -1,11 +1,11 @@
 # The name of the extension.
-extension_name := xulschoolhello
+extension_name := bookmarkdup
 
 # The UUID of the extension.
-extension_uuid := helloworld@xulschool.com
+extension_uuid := bookmarkdup@localghost.net
 
 # The name of the profile dir where the extension can be installed.
-profile_dir := xulschool-dev
+profile_dir := bookmarkdup-dev
 
 # The zip application to be used.
 ZIP := zip

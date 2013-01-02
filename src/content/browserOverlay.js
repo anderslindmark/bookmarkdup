@@ -27,6 +27,6 @@ XULBookmarkDup.BrowserOverlay = {
 	bookmarksService = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Ci.nsINavBookmarksService);
   	historyService = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsINavHistoryService);
 
-    var win = window.openDialog("chrome://bookmarkdup/content/bookmarkdupwindow.xul", "bmdup", "chrome,width=750, height=600", {bmService: bookmarksService, hService: historyService});
+    var win = window.openDialog("chrome://bookmarkdup/content/bookmarkdupwindow.xul", "bmdup", "chrome,width=615, height=300", {bmService: bookmarksService, hService: historyService});
   }
 };

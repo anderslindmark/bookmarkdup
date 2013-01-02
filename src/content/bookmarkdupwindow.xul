@@ -16,17 +16,21 @@ historyServer = null;
 status = null;
 
 function onLoad() {
-  status = document.getElementById("status");
-  status.value = "Getting services";
+  setStatus("Getting services");
   
   bookmarksService = window.arguments[0].bmService;
   historyService = window.arguments[0].hService;
   
-  status.value = "Loading bookmarks";
+  setStatus("Loading bookmarks");
   findBookmarks();
-  status.value = "Bookmarks loaded";
+  setStatus("Bookmarks loaded");
   setlbDupUrisVals();
-  status.value = "Done";
+}
+
+function setStatus(msg) {
+  status = document.getElementById("status");
+  status.value = msg;
+  
 }
 
 /**
@@ -91,7 +95,7 @@ function findBookmarks() {
     if (thisBookmark.node.uri == nextBookmark.node.uri) {
       // Dupe found
       if (!(thisBookmark.node.uri in dupList)) {
-        dupList[thisBookmark.node.uri] = []; // Initialize this dupList[uri]
+        dupList[thisBookmark.node.uri] = []; // Initialize this dupList[uri] entry
       }
       
       // Add both bookmarks, but check if they are already in the list first
@@ -116,14 +120,31 @@ function setlbDupUrisVals() {
     lbdup.removeItemAt(i);
   }
 
-  // Populate list
+  // Sort items
+  var lbitemlist = [];
   for (var uri in dupList) {
-    if (typeof(uri) == "undefined") { continue; }
-    title = dupList[uri][0].node.title;
-    var item = lbdup.appendItem(title, uri);
+    if (typeof(uri) == "undefined") {continue;}
+    var title = dupList[uri][0].node.title;
+    lbitemlist.push( {title: title, uri: uri} )
   }
+
+  lbitemlist.sort( function(a,b) {
+    if (a.title < b.title) return -1;
+    if (a.title > b.title) return 1;
+    return 0;
+  });
+
+  // Populate list
+  for (var i = 0; i < lbitemlist.length; i++)
+  {
+    lbdup.appendItem( lbitemlist[i].title, lbitemlist[i].uri )
+  }
+
 }
 
+/**
+ * Clear details-listbox
+ */
 function clearDupDetails() {
     lbdupdetails = document.getElementById("lbDupDetails");
   // Clear existing values:
@@ -145,8 +166,6 @@ function urisel() {
   clearDupDetails();
 
   uri = item.value;
-  //alert("This item has: " + dupList[uri].length + " url's.");
-
   var bookmarks = dupList[uri];
 
   dupinfo = []; // clear dupinfo
@@ -154,17 +173,21 @@ function urisel() {
   {
     var bookmark = bookmarks[i].node;
     var path = bookmarks[i].path;
-    //var title = bookmark.title;
-    //var itemID = bookmark.itemId;
-
-    //var itemText = path + bookmark.title;
     var itemText = path;
-
-    // {itemId: bookmark.itemId, uri: uri}
     var item = lbdupdetails.appendItem( itemText, i);
     dupinfo.push( {itemId: bookmark.itemId, uri: uri} )
-    //window.alert("i: " + item.value + ", dupinfo[i]: " + dupinfo[i].itemId);
   }
+}
+
+/**
+ * Opens the current uri in a new tab
+ */
+function openbmark() {
+  lbdup = document.getElementById("lbDupUris");
+  item = lbdup.selectedItem;
+  if (item == null) { return; }
+  uri = item.value;
+  window.opener.openUILinkIn(uri, 'tab');
 }
 
 /**
@@ -210,6 +233,14 @@ function delbmarks() {
     //window.alert("bookmarksService.removeItem(" + remove_ids[i] + ")");
   }
 
+  var statusMsg = "";
+  if (remove_ids.length > 1) {
+    statusMsg += remove_ids.length + " x ";
+  }
+  statusMsg += uri + " has been removed.";
+  
+  setStatus(statusMsg);
+  
   // Update dupe-list
   setlbDupUrisVals();
 }
@@ -217,18 +248,29 @@ function delbmarks() {
 
 ]]></script>
 
-<vbox>
-  <hbox>
-    <listbox id="lbDupUris" seltype="single" onselect="urisel();"></listbox>
-    <listbox id="lbDupDetails" seltype="multiple" flex="1"></listbox>
-    <button id="btnDelBmarks" label="Delete" accesskey="d" oncommand="delbmarks();"/>
+<vbox flex="1">
+  <hbox flex="1">
+    <listbox width="300px" id="lbDupUris" seltype="single" onselect="urisel();" flex="1">
+      <listhead>
+        <listheader label="Duplicate (title)"/>
+      </listhead>
+    </listbox>
+    
+    <listbox width="300px" id="lbDupDetails" seltype="multiple" flex="1">
+    <listhead>
+        <listheader label="Bookmarks (location)"/>
+      </listhead>
+    </listbox>
   </hbox>
-
-  <button 
-      id="btnCloseWin"
-      label="Close"
-      accesskey="c"
-      oncommand="close();"/>
+  <hbox>
+    <spacer flex="1"/>
+    <button id="btnDelBmarks" label="Delete" accesskey="D" oncommand="delbmarks();"/>
+    <button id="btnOpenBmark" label="Open" accesskey="O" oncommand="openbmark();"/>
+  </hbox>
+  <hbox>
+    <spacer flex="1"/>
+    <button id="btnCloseWin" label="Close" accesskey="C" oncommand="close();"/>
+  </hbox>
 
   <label id="status" value="Loading..." />
 </vbox>
