@@ -10,10 +10,14 @@
 
 <script><![CDATA[
 
-dupList = {};
-bookmarksService = null;
-historyServer = null;
-status = null;
+// TODO: Select first item in left listbox if deletion causes blank right-list.
+
+var dupList = {};
+var bookmarksService = null;
+var historyService = null;
+var status = null;
+var dupCount = 0;
+var dupinfo = [];
 
 function onLoad() {
   setStatus("Getting services");
@@ -23,14 +27,27 @@ function onLoad() {
   
   setStatus("Loading bookmarks");
   findBookmarks();
-  setStatus("Bookmarks loaded");
   setlbDupUrisVals();
+  setStatus("Bookmarks loaded. " + dupCount + " duplicates found");
+  if (dupCount == 0) {
+    window.alert("No duplicates found.");
+  }
+
 }
 
-function setStatus(msg) {
-  status = document.getElementById("status");
+function setStatus(msg, url) {
+  var status = document.getElementById("status");
+  if (typeof(url) == "undefined") {
+    // status.class = "plain";
+    status.setAttribute("class", "plain");
+  }
+  else {
+    status.href = url;
+    // status.class = "text-link";
+    status.setAttribute("class", "text-link");
+  }
   status.value = msg;
-  
+  // window.alert(status.class);
 }
 
 /**
@@ -39,6 +56,7 @@ function setStatus(msg) {
 function findBookmarks() {
   function queryFolderRec(resultList, baseFolder, path) {
     // Setup new query
+    // TODO: can resultList be removed from the argument?
     var query = historyService.getNewQuery();
     query.setFolders([baseFolder], 1);
     var options = historyService.getNewQueryOptions();
@@ -87,6 +105,7 @@ function findBookmarks() {
     return 0;
   });
 
+  dupCount = 0;
   dupList = {}; // This contains a list of all duplicate bookmarks, on the form {node: bookmark, path: folderpath}
   for (var i = 0; i < resultList.length - 1; i++) {
     var thisBookmark = resultList[i];
@@ -94,6 +113,7 @@ function findBookmarks() {
 
     if (thisBookmark.node.uri == nextBookmark.node.uri) {
       // Dupe found
+      dupCount++;
       if (!(thisBookmark.node.uri in dupList)) {
         dupList[thisBookmark.node.uri] = []; // Initialize this dupList[uri] entry
       }
@@ -114,7 +134,7 @@ function findBookmarks() {
 * Updates the left listbox with duplicate titles
 */
 function setlbDupUrisVals() {
-  lbdup = document.getElementById("lbDupUris");
+  var lbdup = document.getElementById("lbDupUris");
   // Clear list
   for (var i = lbdup.getRowCount()-1; i >= 0; i--) {
     lbdup.removeItemAt(i);
@@ -146,26 +166,26 @@ function setlbDupUrisVals() {
  * Clear details-listbox
  */
 function clearDupDetails() {
-    lbdupdetails = document.getElementById("lbDupDetails");
+  var lbdupdetails = document.getElementById("lbDupDetails");
   // Clear existing values:
   for (var i = lbdupdetails.getRowCount()-1; i >= 0; i--) {
     lbdupdetails.removeItemAt(i);
   }
 }
 
-dupinfo = [];
 /**
 * Updates the right listbox with information for the selected duplicate
 */
 function urisel() {
-  lbdup = document.getElementById("lbDupUris");
+  var lbdup = document.getElementById("lbDupUris");
+  var lbdupdetails = document.getElementById("lbDupDetails");
+  
   item = lbdup.selectedItem;
   if (item == null) { return; }
 
-  lbdupdetails = document.getElementById("lbDupDetails");
   clearDupDetails();
 
-  uri = item.value;
+  var uri = item.value;
   var bookmarks = dupList[uri];
 
   dupinfo = []; // clear dupinfo
@@ -183,7 +203,7 @@ function urisel() {
  * Opens the current uri in a new tab
  */
 function openbmark() {
-  lbdup = document.getElementById("lbDupUris");
+  var lbdup = document.getElementById("lbDupUris");
   item = lbdup.selectedItem;
   if (item == null) { return; }
   uri = item.value;
@@ -194,7 +214,7 @@ function openbmark() {
  * Deletes the selected bookmarks
  */
 function delbmarks() {
-  lbdupdetails = document.getElementById("lbDupDetails");
+  var lbdupdetails = document.getElementById("lbDupDetails");
   var items = lbdupdetails.selectedItems;
   if (items.length == 0) { return; }
 
@@ -239,7 +259,7 @@ function delbmarks() {
   }
   statusMsg += uri + " has been removed.";
   
-  setStatus(statusMsg);
+  setStatus(statusMsg, uri);
   
   // Update dupe-list
   setlbDupUrisVals();
@@ -272,6 +292,6 @@ function delbmarks() {
     <button id="btnCloseWin" label="Close" accesskey="C" oncommand="close();"/>
   </hbox>
 
-  <label id="status" value="Loading..." />
+  <label id="status" class="plain" value="Loading..." />
 </vbox>
 </window>
