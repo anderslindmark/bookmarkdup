@@ -4,7 +4,7 @@
 <window
   onload="onLoad();"
   id="bookmarkdup-window"
-  title="Bookmark dup"
+  title="Bookmark Duplicate Cleaner"
   orient="horizontal"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
