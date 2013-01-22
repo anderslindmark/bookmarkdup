@@ -47,7 +47,6 @@ function setStatus(msg, url) {
     status.setAttribute("class", "text-link");
   }
   status.value = msg;
-  // window.alert(status.class);
 }
 
 /**
@@ -135,6 +134,7 @@ function findBookmarks() {
 */
 function setlbDupUrisVals() {
   var lbdup = document.getElementById("lbDupUris");
+
   // Clear list
   for (var i = lbdup.getRowCount()-1; i >= 0; i--) {
     lbdup.removeItemAt(i);
@@ -159,7 +159,6 @@ function setlbDupUrisVals() {
   {
     lbdup.appendItem( lbitemlist[i].title, lbitemlist[i].uri )
   }
-
 }
 
 /**
@@ -240,8 +239,9 @@ function delbmarks() {
   if (dupList[uri].length <= 1) {
     delete dupList[uri];
     lbdupuris = document.getElementById("lbDupUris");
-    clearDupDetails();
+    lbdupuris.removeItemAt(lbdupuris.getIndexOfItem(lbdupuris.selectedItem));
     lbdupuris.selectedItem = null;
+    clearDupDetails();
   }
   else {
     urisel();
@@ -250,7 +250,6 @@ function delbmarks() {
   // Delete the actual bookmarks
   for (var i = 0; i < remove_ids.length; i++) {
     bookmarksService.removeItem(remove_ids[i]);
-    //window.alert("bookmarksService.removeItem(" + remove_ids[i] + ")");
   }
 
   var statusMsg = "";
@@ -260,9 +259,6 @@ function delbmarks() {
   statusMsg += uri + " has been removed.";
   
   setStatus(statusMsg, uri);
-  
-  // Update dupe-list
-  setlbDupUrisVals();
 }
 
 
@@ -282,16 +278,11 @@ function delbmarks() {
       </listhead>
     </listbox>
   </hbox>
-  <hbox>
+  <hbox align="baseline">
+    <label id="status" class="plain" value="Loading..." />
     <spacer flex="1"/>
     <button id="btnDelBmarks" label="Delete" accesskey="D" oncommand="delbmarks();"/>
     <button id="btnOpenBmark" label="Open" accesskey="O" oncommand="openbmark();"/>
   </hbox>
-  <hbox>
-    <spacer flex="1"/>
-    <button id="btnCloseWin" label="Close" accesskey="C" oncommand="close();"/>
-  </hbox>
-
-  <label id="status" class="plain" value="Loading..." />
 </vbox>
 </window>
