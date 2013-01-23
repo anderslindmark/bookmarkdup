@@ -19,28 +19,34 @@
   </stringbundleset>
 
   <menupopup id="menu_ToolsPopup">
-    <menu id="bookmarkdup-bmdup-menu" label="&bookmarkdup.bmdup.label;"
-      accesskey="&bookmarkdup.bmdupMenu.accesskey;"
-      insertbefore="devToolsEndSeparator">
-      <menupopup>
-        <menuitem id="bookmarkdup-bmdup-menu-item"
-          label="&bookmarkdup.bmdupFind.label;"
-          accesskey="&bookmarkdup.bmdupItem.accesskey;"
+    <menuitem id="bookmarkdup-tools-menu-item"
+          label="&bookmarkdup.bmdup.label;"
+          accesskey="&bookmarkdup.bmdup.accesskey;"
+          insertbefore="devToolsEndSeparator"
           oncommand="XULBookmarkDup.BrowserOverlay.findDups(event);" />
-      </menupopup>
-    </menu>
+  </menupopup>
+
+  <menupopup id="bookmarksMenuPopup">
+    <menuitem id="bookmarkdup-bookmarks-menu-item"
+          label="&bookmarkdup.bmdup.label;"
+          accesskey="&bookmarkdup.bmdup.accesskey;"
+          insertafter="bookmarksShowAll"
+          oncommand="XULBookmarkDup.BrowserOverlay.findDups(event);" />
+  </menupopup>
+
+  <menupopup id="BMB_bookmarksPopup">
+    <menuitem id="bookmarkdup-bookmarksBMB-menu-item"
+          label="&bookmarkdup.bmdup.label;"
+          accesskey="&bookmarkdup.bmdup.accesskey;"
+          insertafter="BMB_bookmarksShowAll"
+          oncommand="XULBookmarkDup.BrowserOverlay.findDups(event);" />
   </menupopup>
 
   <vbox id="appmenuSecondaryPane">
-    <menu id="bookmarkdup-bmdup-menu-2" label="&bookmarkdup.bmdup.label;"
-      accesskey="&bookmarkdup.bmdupMenu.accesskey;"
-      insertafter="appmenu_addons">
-      <menupopup>
-        <menuitem id="bookmarkdup-bmdup-menu-item-2"
-          label="&bookmarkdup.bmdupFind.label;"
-          accesskey="&bookmarkdup.bmdupItem.accesskey;"
+        <menuitem id="bookmarkdup-appmenu-menu-item"
+          label="&bookmarkdup.bmdup.label;"
+          accesskey="&bookmarkdup.bmdup.accesskey;"
+          insertafter="appmenu_addons"
           oncommand="XULBookmarkDup.BrowserOverlay.findDups(event);" />
-      </menupopup>
-    </menu>
   </vbox>
 </overlay>

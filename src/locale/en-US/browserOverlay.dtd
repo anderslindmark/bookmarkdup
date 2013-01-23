@@ -1,4 +1,6 @@
 <!ENTITY bookmarkdup.bmdup.label            "Bookmark Duplicate Cleaner">
+<!ENTITY bookmarkdup.bmdup.accesskey    	"B">
+
+
 <!ENTITY bookmarkdup.bmdupFind.label		"Find duplicates">
-<!ENTITY bookmarkdup.bmdupMenu.accesskey    "B">
 <!ENTITY bookmarkdup.bmdupItem.accesskey    "F">

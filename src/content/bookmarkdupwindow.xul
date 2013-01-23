@@ -30,7 +30,8 @@ function onLoad() {
   setlbDupUrisVals();
   setStatus("Bookmarks loaded. " + dupCount + " duplicates found");
   if (dupCount == 0) {
-    window.alert("No duplicates found.");
+    setStatus("No duplicates found");
+    window.resizeTo(400, 200);
   }
 
 }
@@ -264,25 +265,32 @@ function delbmarks() {
 
 ]]></script>
 
-<vbox flex="1">
-  <hbox flex="1">
-    <listbox width="300px" id="lbDupUris" seltype="single" onselect="urisel();" flex="1">
+<vbox height="600px" flex="1">
+  <hbox flex="1" id="listboxcontainer">
+    <listbox width="350px" id="lbDupUris" seltype="single" onselect="urisel();" flex="1">
       <listhead>
         <listheader label="Duplicate (title)"/>
       </listhead>
     </listbox>
     
-    <listbox width="300px" id="lbDupDetails" seltype="multiple" flex="1">
+  <splitter></splitter>
+
+    <listbox width="350px" id="lbDupDetails" seltype="multiple" flex="1">
     <listhead>
         <listheader label="Bookmarks (location)"/>
       </listhead>
     </listbox>
   </hbox>
   <hbox align="baseline">
-    <label id="status" class="plain" value="Loading..." />
+    <spacer width="5px"/>
+    <label id="status" class="plain" crop="right" flex="1" value="Loading..." />
     <spacer flex="1"/>
-    <button id="btnDelBmarks" label="Delete" accesskey="D" oncommand="delbmarks();"/>
     <button id="btnOpenBmark" label="Open" accesskey="O" oncommand="openbmark();"/>
+    <button id="btnDelBmarks" label="Delete" accesskey="D" oncommand="delbmarks();"/>
   </hbox>
 </vbox>
+
+<keyset>
+  <key id="key-close" key="w" modifiers="accel" oncommand="close();"/>
+</keyset>
 </window>
