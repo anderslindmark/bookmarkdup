@@ -7,7 +7,7 @@
     <em:id>bookmarkdup@localghost.net</em:id>
     <em:name>Bookmark Duplicate Cleaner</em:name>
     <em:description>Scans for bookmark duplicates and allows you to delete them</em:description>
-    <em:version>0.1</em:version>
+    <em:version>0.2</em:version>
     <em:creator>Anders Lindmark</em:creator>
     <em:homepageURL>http://anderslindmark.github.com/bookmarkdup</em:homepageURL>
     <em:type>2</em:type>
