@@ -1,0 +1,5 @@
+<!ENTITY bookmarkdup.bmdupwindow.title "Bookmark Duplicate Cleaner">
+<!ENTITY bookmarkdup.lbDupUris.label "Duplicate (title)">
+<!ENTITY bookmarkdup.lbDupDetails.label "Bookmarks (location)">
+<!ENTITY bookmarkdup.btnOpenBmark.label "Open">
+<!ENTITY bookmarkdup.btnDelBmarks.label "Delete">
