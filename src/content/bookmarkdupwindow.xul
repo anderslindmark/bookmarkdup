@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/css" href="chrome://global/skin/" ?>
 
+<!DOCTYPE overlay SYSTEM "chrome://bookmarkdup/locale/bookmarkdupwindow.dtd">
+
 <window
   onload="onLoad();"
   id="bookmarkdup-window"
-  title="Bookmark Duplicate Cleaner"
+  title="&bookmarkdup.bmdupwindow.title;"
   orient="horizontal"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
@@ -14,7 +16,7 @@
   <hbox flex="1" id="listboxcontainer">
     <listbox width="350px" id="lbDupUris" seltype="single" onselect="urisel();" flex="1">
       <listhead>
-        <listheader label="Duplicate (title)"/>
+        <listheader label="&bookmarkdup.lbDupUris.label;"/>
       </listhead>
     </listbox>
     
@@ -22,7 +24,7 @@
 
     <listbox width="350px" id="lbDupDetails" seltype="multiple" flex="1">
     <listhead>
-        <listheader label="Bookmarks (location)"/>
+        <listheader label="&bookmarkdup.lbDupDetails.label;"/>
       </listhead>
     </listbox>
   </hbox>
@@ -30,8 +32,8 @@
     <spacer width="5px"/>
     <label id="status" class="plain" crop="right" flex="1" value="Loading..." />
     <spacer flex="1"/>
-    <button id="btnOpenBmark" label="Open" accesskey="O" disabled="true" oncommand="openbmark();"/>
-    <button id="btnDelBmarks" label="Delete" accesskey="D" disabled="true" oncommand="delbmarks();"/>
+    <button id="btnOpenBmark" label="&bookmarkdup.btnOpenBmark.label;" accesskey="O" disabled="true" oncommand="openbmark();"/>
+    <button id="btnDelBmarks" label="&bookmarkdup.btnDelBmarks.label;" accesskey="D" disabled="true" oncommand="delbmarks();"/>
   </hbox>
 </vbox>
 
