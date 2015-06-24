@@ -19,15 +19,21 @@
         <listheader label="&bookmarkdup.lbDupUris.label;"/>
       </listhead>
     </listbox>
-    
+
   <splitter></splitter>
 
     <listbox width="350px" id="lbDupDetails" seltype="multiple" flex="1">
-    <listhead>
-        <listheader label="&bookmarkdup.lbDupDetails.label;"/>
-      </listhead>
+        <listhead>
+            <listheader label="&bookmarkdup.lbDupDetails.label_location;"/>
+            <listheader label="&bookmarkdup.lbDupDetails.label_date;"/>
+        </listhead>
+        <listcols>
+            <listcol flex="1"/>
+            <listcol flex="1"/>
+        </listcols>
     </listbox>
   </hbox>
+
   <hbox align="baseline">
     <spacer width="5px"/>
     <label id="status" class="plain" crop="right" flex="1" value="Loading..." />

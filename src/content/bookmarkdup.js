@@ -17,7 +17,7 @@ function init() {
     setStatus("No duplicates found");
     window.resizeTo(400, 200);
   }
-  
+
   document.getElementById("btnOpenBmark").disabled = false;
   document.getElementById("btnDelBmarks").disabled = false;
 }
@@ -107,7 +107,7 @@ function findBookmarks() {
       if (!(thisBookmark.node.uri in dupList)) {
         dupList[thisBookmark.node.uri] = []; // Initialize this dupList[uri] entry
       }
-      
+
       // Add both bookmarks, but check if they are already in the list first
       if (dupList[thisBookmark.node.uri].indexOf(thisBookmark) == -1) {
         dupList[thisBookmark.node.uri].push(thisBookmark);
@@ -169,7 +169,7 @@ function clearDupDetails() {
 function urisel() {
   var lbdup = document.getElementById("lbDupUris");
   var lbdupdetails = document.getElementById("lbDupDetails");
-  
+
   item = lbdup.selectedItem;
   if (item == null) { return; }
 
@@ -183,10 +183,33 @@ function urisel() {
   {
     var bookmark = bookmarks[i].node;
     var path = bookmarks[i].path;
-    var itemText = path;
-    var item = lbdupdetails.appendItem( itemText, i);
+
+    // Create the row and add the columns
+    var row = document.createElement('listitem');
+    var cell = document.createElement('listcell');
+    cell.setAttribute('label', path);
+    cell.setAttribute('value', i);
+    row.appendChild(cell);
+    cell = document.createElement('listcell');
+    cell.setAttribute('label', dateStrFromBookmarkTimestamp(bookmark.lastModified));
+    cell.setAttribute('value', i);
+    row.appendChild(cell);
+
+    lbdupdetails.appendChild(row);
     dupinfo.push( {itemId: bookmark.itemId, uri: uri} )
   }
+}
+
+function dateStrFromBookmarkTimestamp(timestamp) {
+    // TODO: This needs to use localized timestrings instead
+    var d = new Date(timestamp/1000);
+    var year = d.getFullYear();
+    var m = d.getMonth()+1;
+    var month = (m < 10) ? "0" + m : m;
+    var date = (d.getDate() < 10) ? "0" + d.getDate() : d.getDate();
+    var hours = (d.getHours() < 10) ? "0" + d.getHours() : d.getHours();
+    var minutes = (d.getMinutes() < 10) ? "0" + d.getMinutes() : d.getMinutes();
+    return year + "-" + month + "-" + date + " " + hours + ":" + minutes;
 }
 
 /**
@@ -213,17 +236,18 @@ function delbmarks() {
   // Iterate over selected items
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
-    var itemId = dupinfo[item.value].itemId;
-    uri = dupinfo[item.value].uri;
+    var dupIndex = parseInt(item.firstChild.getAttribute("value"));
+    var itemId = dupinfo[dupIndex].itemId;
+    uri = dupinfo[dupIndex].uri;
     remove_ids.push(itemId); // Add to list of items to be removed
-    
+
     // Iterate over current dupeList, remove items from that list
     var bookmarks = dupList[uri];
     for (var j = bookmarks.length-1; j >= 0; j--) {
       if (bookmarks[j].node.itemId == itemId) {
         bookmarks.splice(j, 1);
       }
-    }    
+    }
   }
 
   // If there is no longer sufficient bookmarks to be a dupe, delete this and deselect this item.
@@ -248,6 +272,6 @@ function delbmarks() {
     statusMsg += remove_ids.length + " x ";
   }
   statusMsg += uri + " has been removed.";
-  
+
   setStatus(statusMsg, uri);
 }
